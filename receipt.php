@@ -33,9 +33,16 @@ if (!$transaksi) {
     exit;
 }
 
+// Otorisasi: Kasir hanya boleh membuka struk transaksi miliknya sendiri
+if (getCurrentUser()['role'] === 'Kasir' && (int)$transaksi['id_pengguna'] !== (int)getCurrentUser()['id']) {
+    setFlash('error', 'Anda hanya dapat melihat struk transaksi milik Anda sendiri.');
+    header("Location: transaksi.php");
+    exit;
+}
+
 // Ambil detail transaksi
 $stmt = $pdo->prepare("
-    SELECT dt.*, m.nama_menu, m.harga 
+    SELECT dt.*, m.nama_menu 
     FROM detail_transaksi dt 
     JOIN menu m ON dt.id_menu = m.id_menu 
     WHERE dt.id_transaksi = ?
@@ -67,7 +74,7 @@ $details = $stmt->fetchAll();
         <div class="receipt-item">
           <div>
             <div><?= htmlspecialchars($d['nama_menu']) ?></div>
-            <div class="item-detail"><?= $d['jumlah_porsi'] ?> × Rp <?= number_format($d['harga'], 0, ',', '.') ?></div>
+            <div class="item-detail"><?= $d['jumlah_porsi'] ?> × <?= rupiah($d['subtotal'] / $d['jumlah_porsi']) ?></div>
           </div>
           <div><strong>Rp <?= number_format($d['subtotal'], 0, ',', '.') ?></strong></div>
         </div>
@@ -106,6 +113,9 @@ $details = $stmt->fetchAll();
   </button>
   <a href="pos.php" class="btn btn-accent">
     <i data-lucide="plus-circle" style="width:16px;height:16px;"></i> Transaksi Baru
+  </a>
+  <a href="transaksi.php" class="btn btn-outline">
+    <i data-lucide="history" style="width:16px;height:16px;"></i> Riwayat
   </a>
   <a href="dashboard.php" class="btn btn-outline">
     <i data-lucide="home" style="width:16px;height:16px;"></i> Dashboard

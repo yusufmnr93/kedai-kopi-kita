@@ -112,8 +112,8 @@ try {
         if ($data['butuh'] > $data['stok']) {
             throw new Exception(
                 'Stok bahan baku "' . $data['nama'] . '" tidak mencukupi. ' .
-                'Dibutuhkan: ' . number_format($data['butuh'], 1) . ' ' . $data['satuan'] . ', ' .
-                'Tersedia: ' . number_format($data['stok'], 1) . ' ' . $data['satuan'] . '.'
+                'Dibutuhkan: ' . fmtQty($data['butuh']) . ' ' . $data['satuan'] . ', ' .
+                'Tersedia: ' . fmtQty($data['stok']) . ' ' . $data['satuan'] . '.'
             );
         }
     }

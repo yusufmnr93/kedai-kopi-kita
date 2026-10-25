@@ -1285,3 +1285,114 @@ textarea.form-control {
     display: none !important;
   }
 }
+
+
+/* ======================================================
+   MODUL 8 — Filter, Pagination, Dashboard, Laporan
+   ====================================================== */
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+}
+.filter-bar .form-group { margin-bottom: 0; flex: 1; min-width: 140px; }
+.filter-actions { display: flex; gap: 0.5rem; align-items: flex-end; }
+
+/* Pintasan periode */
+.quick-range { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.75rem; font-size: var(--font-size-sm); }
+.chip {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  background: var(--color-card);
+}
+.chip:hover  { border-color: var(--color-primary); }
+.chip.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+/* Tabel */
+.cell-wrap { max-width: 320px; white-space: normal; }
+table th.text-right, table td.text-right { text-align: right; }
+table tfoot td { background: #F3F4F6; border-top: 2px solid var(--color-border); padding: 12px 16px; }
+
+/* Pagination */
+.pagination-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; font-size: var(--font-size-sm);
+}
+.pagination { display: flex; gap: 0.25rem; }
+.pagination a, .pagination span {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-card);
+  font-size: var(--font-size-sm);
+}
+.pagination a:hover { border-color: var(--color-primary); }
+.pagination .active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; font-weight: 600; }
+
+/* Dashboard & laporan */
+.dash-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+.report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.report-grid .card, .dash-grid .card { margin-bottom: 0; }
+.report-area .card { margin-bottom: 1.5rem; }
+.report-head {
+  display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+  padding-bottom: 1rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--color-primary);
+}
+.report-meta { font-size: var(--font-size-sm); line-height: 1.7; text-align: right; }
+
+/* Bar horizontal sederhana (tanpa library) */
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; font-size: var(--font-size-sm); }
+.bar-label { width: 56px; flex-shrink: 0; color: var(--color-text-secondary); }
+.bar-track { flex: 1; height: 12px; background: #F3F4F6; border-radius: 999px; overflow: hidden; }
+.bar-fill  { height: 100%; background: var(--color-accent); border-radius: 999px; }
+.bar-fill.alt { background: var(--color-primary-light); }
+.bar-value { min-width: 110px; text-align: right; font-weight: 600; white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .dash-grid, .report-grid { grid-template-columns: 1fr; }
+}
+
+/* Cetak laporan */
+@media print {
+  .report-area, .report-area * { visibility: visible; }
+  .report-area { position: absolute; top: 0; left: 0; width: 100%; }
+  .report-area .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  .report-area .stat-card { box-shadow: none; border: 1px solid #ccc; }
+  .no-print { display: none !important; }
+  .report-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Angka ringkasan tidak dipecah ke dua baris */
+.stat-card .stat-value { white-space: nowrap; }
+
+/* Cetak laporan: tata letak tetap (tidak ikut aturan layar kecil) */
+@media print {
+  body { background: #fff !important; }
+  .report-area { font-size: 11px; }
+  .report-area .stat-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; }
+  .report-area .stat-card { padding: 8px 10px !important; gap: 8px !important; }
+  .report-area .stat-card .stat-value { font-size: 15px !important; }
+  .report-area .stat-card .stat-icon { display: none !important; }
+  .report-area .report-grid { grid-template-columns: 1fr !important; }
+  .report-area table th, .report-area table td { padding: 5px 8px !important; font-size: 10.5px !important; }
+  .report-area .card-header { padding: 8px 12px !important; }
+  .report-area .card-body { padding: 8px 12px !important; }
+  .report-area .report-head { flex-direction: row !important; }
+  .report-area .report-meta { text-align: right !important; }
+}
+
+
+/* Perbaikan tampilan (Modul 8): angka uang, waktu, dan nomor transaksi tidak boleh terpecah ke dua baris */
+.nowrap { white-space: nowrap; }
+table th.text-right, table td.text-right { white-space: nowrap; }
+.dash-grid table th, .dash-grid table td { padding-left: 10px; padding-right: 10px; }

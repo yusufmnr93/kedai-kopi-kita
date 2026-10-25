@@ -173,6 +173,11 @@ let cart = [];
 // Simpan markup keranjang kosong (elemen asli terhapus saat innerHTML diganti)
 const EMPTY_CART_HTML = document.getElementById('cartItems').innerHTML;
 
+// Escape teks sebelum disisipkan ke innerHTML (cegah XSS dari nama menu)
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 // Format Rupiah
 function formatRp(n) {
     return 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -240,7 +245,7 @@ function renderCart() {
         html += `
         <div class="cart-item">
           <div class="item-info">
-            <div class="item-name">${item.name}</div>
+            <div class="item-name">${escapeHtml(item.name)}</div>
             <div class="item-price">${formatRp(item.price)} × ${item.qty}</div>
           </div>
           <div class="item-qty">

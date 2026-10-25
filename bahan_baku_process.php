@@ -32,11 +32,13 @@ try {
             if ($id <= 0) throw new Exception('ID bahan baku tidak valid.');
             if (empty($nama))   throw new Exception('Nama bahan baku wajib diisi.');
             if (empty($satuan)) throw new Exception('Satuan wajib dipilih.');
-            if ($stok < 0)      throw new Exception('Stok tidak boleh negatif.');
             if ($minimum < 0)   throw new Exception('Stok minimum tidak boleh negatif.');
-            
-            $stmt = $pdo->prepare("UPDATE bahan_baku SET nama_bahan_baku = ?, satuan = ?, stok_tersedia = ?, stok_minimum = ? WHERE id_bahan_baku = ?");
-            $stmt->execute([$nama, $satuan, $stok, $minimum, $id]);
+
+            // BR (Modul 8): stok_tersedia TIDAK diubah dari form master data.
+            // Stok hanya berubah lewat Stok Masuk (UC-06) dan transaksi POS (UC-03),
+            // sehingga setiap perubahan stok memiliki jejak di database.
+            $stmt = $pdo->prepare("UPDATE bahan_baku SET nama_bahan_baku = ?, satuan = ?, stok_minimum = ? WHERE id_bahan_baku = ?");
+            $stmt->execute([$nama, $satuan, $minimum, $id]);
             setFlash('success', 'Bahan baku berhasil diperbarui.');
             break;
 

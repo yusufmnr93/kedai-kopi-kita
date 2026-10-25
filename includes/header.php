@@ -5,6 +5,8 @@
  * Navigasi disesuaikan dengan role pengguna (RBAC)
  */
 
+// Output buffering: agar redirect dari requireRole() tetap berfungsi walau layout sudah mulai dicetak
+ob_start();
 require_once __DIR__ . '/auth.php';
 requireLogin();
 
@@ -16,6 +18,7 @@ $navMenus = [
     'Utama' => [
         ['page' => 'dashboard',   'label' => 'Dashboard',       'icon' => 'layout-dashboard', 'roles' => ['Owner', 'Kasir', 'Barista']],
         ['page' => 'pos',         'label' => 'POS Kasir',       'icon' => 'shopping-cart',     'roles' => ['Owner', 'Kasir']],
+        ['page' => 'transaksi',   'label' => 'Riwayat Transaksi', 'icon' => 'history',         'roles' => ['Owner', 'Kasir']],
     ],
     'Master Data' => [
         ['page' => 'kategori',    'label' => 'Kategori',        'icon' => 'folder',            'roles' => ['Owner']],
@@ -25,6 +28,9 @@ $navMenus = [
     ],
     'Operasional' => [
         ['page' => 'stok_masuk',  'label' => 'Stok Masuk',      'icon' => 'truck',             'roles' => ['Owner', 'Barista']],
+    ],
+    'Laporan' => [
+        ['page' => 'laporan',     'label' => 'Laporan Penjualan', 'icon' => 'file-text',       'roles' => ['Owner']],
     ],
 ];
 ?>

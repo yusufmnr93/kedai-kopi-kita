@@ -10,6 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/helpers.php';
 
 /**
  * Proses login: verifikasi username & password
@@ -24,6 +25,7 @@ function login($username, $password) {
     $user = $stmt->fetch();
     
     if ($user && password_verify($password, $user['password'])) {
+        session_regenerate_id(true); // cegah session fixation
         // Simpan data pengguna ke session
         $_SESSION['user_id']   = $user['id_pengguna'];
         $_SESSION['username']  = $user['username'];

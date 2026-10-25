@@ -1,7 +1,11 @@
+.env
+.env.*
+!.env.example
 
-/config/database.php
-*.log
-.DS_Store
-Thumbs.db
-.vscode/
+config/database.php
+
+vendor/
+node_modules/
 .idea/
+.vscode/
+*.log

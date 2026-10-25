@@ -98,10 +98,13 @@ foreach ($bahanList as $b) {
           </select>
         </div>
         <div class="form-group">
-          <label for="stok_tersedia">Stok Tersedia <span class="required">*</span></label>
+          <label for="stok_tersedia"><?= $editData ? 'Stok Tersedia' : 'Stok Awal' ?> <span class="required">*</span></label>
           <input type="number" id="stok_tersedia" name="stok_tersedia" class="form-control"
                  placeholder="0" required min="0" step="0.01"
-                 value="<?= $editData['stok_tersedia'] ?? '' ?>">
+                 value="<?= $editData['stok_tersedia'] ?? '' ?>" <?= $editData ? 'readonly' : '' ?>>
+          <?php if ($editData): ?>
+            <div class="form-text">Stok berubah otomatis lewat <a href="stok_masuk.php">Stok Masuk</a> dan transaksi POS.</div>
+          <?php endif; ?>
         </div>
         <div class="form-group">
           <label for="stok_minimum">Stok Minimum <span class="required">*</span></label>
@@ -145,8 +148,8 @@ foreach ($bahanList as $b) {
               <td><?= $i + 1 ?></td>
               <td><strong><?= htmlspecialchars($b['nama_bahan_baku']) ?></strong></td>
               <td><?= htmlspecialchars($b['satuan']) ?></td>
-              <td><?= number_format($b['stok_tersedia'], 1) ?></td>
-              <td><?= number_format($b['stok_minimum'], 1) ?></td>
+              <td><?= fmtQty($b['stok_tersedia']) ?></td>
+              <td><?= fmtQty($b['stok_minimum']) ?></td>
               <td>
                 <?php if ($b['stok_tersedia'] <= 0): ?>
                   <span class="badge badge-danger">Habis</span>

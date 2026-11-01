@@ -39,6 +39,7 @@ if (isset($_GET['edit'])) {
     
     <!-- Form Tambah / Edit -->
     <form method="POST" action="menu_process.php" style="margin-bottom:1.5rem;">
+<?= csrfField() ?>
       <input type="hidden" name="id_menu" value="<?= $editData['id_menu'] ?? '' ?>">
       <div class="form-row">
         <div class="form-group">
@@ -107,6 +108,7 @@ if (isset($_GET['edit'])) {
                   </a>
                   <form method="POST" action="menu_process.php" style="display:inline;"
                         onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
+<?= csrfField() ?>
                     <input type="hidden" name="id_menu" value="<?= $m['id_menu'] ?>">
                     <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="Hapus">
                       <i data-lucide="trash-2" style="width:14px;height:14px;"></i>

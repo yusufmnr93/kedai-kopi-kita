@@ -156,6 +156,7 @@ $categoryIcons = [
 
 <!-- Form tersembunyi untuk submit transaksi -->
 <form id="formTransaksi" method="POST" action="pos_process.php" style="display:none;">
+  <?= csrfField() ?>
   <input type="hidden" name="cart_data" id="inputCartData">
   <input type="hidden" name="metode_pembayaran" id="inputMetode">
   <input type="hidden" name="nominal_bayar" id="inputNominal">

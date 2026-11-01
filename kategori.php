@@ -30,6 +30,7 @@ if (isset($_GET['edit'])) {
     
     <!-- Form Tambah / Edit -->
     <form method="POST" action="kategori_process.php" style="margin-bottom:1.5rem;">
+<?= csrfField() ?>
       <input type="hidden" name="id_kategori" value="<?= $editData['id_kategori'] ?? '' ?>">
       <div style="display:flex; gap:0.75rem; align-items:flex-end;">
         <div class="form-group" style="flex:1; margin-bottom:0;">
@@ -80,6 +81,7 @@ if (isset($_GET['edit'])) {
                   </a>
                   <form method="POST" action="kategori_process.php" style="display:inline;"
                         onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
+<?= csrfField() ?>
                     <input type="hidden" name="id_kategori" value="<?= $kat['id_kategori'] ?>">
                     <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="Hapus">
                       <i data-lucide="trash-2" style="width:14px;height:14px;"></i>

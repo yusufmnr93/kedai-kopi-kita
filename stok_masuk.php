@@ -38,6 +38,7 @@ $stokMasukList = $pdo->query("
     
     <!-- Form Input Stok -->
     <form method="POST" action="stok_masuk_process.php" style="margin-bottom:1.5rem;">
+<?= csrfField() ?>
       <div class="form-row">
         <div class="form-group">
           <label for="id_bahan_baku">Bahan Baku <span class="required">*</span></label>

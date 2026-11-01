@@ -80,6 +80,7 @@ foreach ($bahanList as $b) {
     
     <!-- Form Tambah / Edit -->
     <form method="POST" action="bahan_baku_process.php" style="margin-bottom:1.5rem;">
+<?= csrfField() ?>
       <input type="hidden" name="id_bahan_baku" value="<?= $editData['id_bahan_baku'] ?? '' ?>">
       <div class="form-row">
         <div class="form-group">
@@ -166,6 +167,7 @@ foreach ($bahanList as $b) {
                   </a>
                   <form method="POST" action="bahan_baku_process.php" style="display:inline;"
                         onsubmit="return confirm('Yakin ingin menghapus bahan baku ini?');">
+<?= csrfField() ?>
                     <input type="hidden" name="id_bahan_baku" value="<?= $b['id_bahan_baku'] ?>">
                     <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="Hapus">
                       <i data-lucide="trash-2" style="width:14px;height:14px;"></i>

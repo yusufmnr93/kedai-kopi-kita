@@ -40,6 +40,7 @@ $navMenus = [
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sistem Kasir dan Inventaris Bahan Baku Kedai Kopi Kita">
+  <meta name="csrf-token" content="<?= htmlspecialchars(csrfToken()) ?>">
   <title><?= $pageTitle ?? 'Kedai Kopi Kita' ?> — Kedai Kopi Kita</title>
   
   <!-- Google Fonts: Inter -->
@@ -57,6 +58,7 @@ $navMenus = [
 <div class="app-layout">
   
   <!-- Sidebar -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-icon">☕</div>
@@ -68,6 +70,11 @@ $navMenus = [
     
     <nav class="sidebar-nav">
       <?php foreach ($navMenus as $section => $items): ?>
+        <?php
+        // BUG-07: judul grup hanya ditampilkan jika role memiliki minimal satu menu di dalamnya
+        $itemsRole = array_filter($items, fn($it) => in_array($currentUser['role'], $it['roles']));
+        if (!$itemsRole) continue;
+        ?>
         <div class="nav-section"><?= htmlspecialchars($section) ?></div>
         <?php foreach ($items as $item): ?>
           <?php if (in_array($currentUser['role'], $item['roles'])): ?>
@@ -96,7 +103,10 @@ $navMenus = [
   <!-- Main Content -->
   <main class="main-content">
     <div class="topbar">
-      <div>
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Buka menu navigasi" aria-controls="sidebar" aria-expanded="false">
+        <i data-lucide="menu" style="width:22px;height:22px;"></i>
+      </button>
+      <div class="topbar-title">
         <h1><?= $pageTitle ?? 'Dashboard' ?></h1>
         <div class="breadcrumb">Kedai Kopi Kita / <?= $pageTitle ?? 'Dashboard' ?></div>
       </div>

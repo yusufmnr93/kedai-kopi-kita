@@ -117,3 +117,6 @@ function getFlash($type) {
     }
     return null;
 }
+
+// Modul 9: seluruh permintaan POST wajib membawa token CSRF
+csrfEnforce();

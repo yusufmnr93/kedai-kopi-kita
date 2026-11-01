@@ -60,6 +60,7 @@ if (isset($_GET['edit'])) {
     
     <!-- Form Tambah / Edit Resep -->
     <form method="POST" action="resep_process.php" style="margin-bottom:1.5rem;">
+<?= csrfField() ?>
       <input type="hidden" name="id_resep" value="<?= $editData['id_resep'] ?? '' ?>">
       <div class="form-row">
         <div class="form-group">
@@ -134,6 +135,7 @@ if (isset($_GET['edit'])) {
                   </a>
                   <form method="POST" action="resep_process.php" style="display:inline;"
                         onsubmit="return confirm('Yakin ingin menghapus resep ini?');">
+<?= csrfField() ?>
                     <input type="hidden" name="id_resep" value="<?= $r['id_resep'] ?>">
                     <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger" title="Hapus">
                       <i data-lucide="trash-2" style="width:14px;height:14px;"></i>

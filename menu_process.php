@@ -17,9 +17,11 @@ $harga  = floatval($_POST['harga'] ?? 0);
 try {
     switch ($action) {
         case 'create':
-            if (empty($nama)) throw new Exception('Nama menu wajib diisi.');
+            if ($nama === '') throw new Exception('Nama menu wajib diisi.');
+            cekPanjang($nama, 100, 'Nama menu');
             if ($idKat <= 0) throw new Exception('Kategori wajib dipilih.');
             if ($harga <= 0) throw new Exception('Harga harus lebih besar dari 0.');
+            cekMaks($harga, 'Harga');
             
             $stmt = $pdo->prepare("INSERT INTO menu (id_kategori, nama_menu, harga) VALUES (?, ?, ?)");
             $stmt->execute([$idKat, $nama, $harga]);
@@ -28,9 +30,11 @@ try {
 
         case 'update':
             if ($id <= 0) throw new Exception('ID menu tidak valid.');
-            if (empty($nama)) throw new Exception('Nama menu wajib diisi.');
+            if ($nama === '') throw new Exception('Nama menu wajib diisi.');
+            cekPanjang($nama, 100, 'Nama menu');
             if ($idKat <= 0) throw new Exception('Kategori wajib dipilih.');
             if ($harga <= 0) throw new Exception('Harga harus lebih besar dari 0.');
+            cekMaks($harga, 'Harga');
             
             $stmt = $pdo->prepare("UPDATE menu SET id_kategori = ?, nama_menu = ?, harga = ? WHERE id_menu = ?");
             $stmt->execute([$idKat, $nama, $harga, $id]);
@@ -55,7 +59,7 @@ try {
             throw new Exception('Aksi tidak valid.');
     }
 } catch (Exception $e) {
-    setFlash('error', $e->getMessage());
+    setFlash('error', userError($e));
 }
 
 header("Location: menu.php");

@@ -18,8 +18,12 @@ $minimum= floatval($_POST['stok_minimum'] ?? 0);
 try {
     switch ($action) {
         case 'create':
-            if (empty($nama))   throw new Exception('Nama bahan baku wajib diisi.');
-            if (empty($satuan)) throw new Exception('Satuan wajib dipilih.');
+            if ($nama === '')   throw new Exception('Nama bahan baku wajib diisi.');
+            if ($satuan === '') throw new Exception('Satuan wajib dipilih.');
+            cekPanjang($nama, 100, 'Nama bahan baku');
+            cekPanjang($satuan, 20, 'Satuan');
+            cekMaks($stok, 'Stok');
+            cekMaks($minimum, 'Stok minimum');
             if ($stok < 0)      throw new Exception('Stok tidak boleh negatif.');
             if ($minimum < 0)   throw new Exception('Stok minimum tidak boleh negatif.');
             
@@ -30,8 +34,12 @@ try {
 
         case 'update':
             if ($id <= 0) throw new Exception('ID bahan baku tidak valid.');
-            if (empty($nama))   throw new Exception('Nama bahan baku wajib diisi.');
-            if (empty($satuan)) throw new Exception('Satuan wajib dipilih.');
+            if ($nama === '')   throw new Exception('Nama bahan baku wajib diisi.');
+            if ($satuan === '') throw new Exception('Satuan wajib dipilih.');
+            cekPanjang($nama, 100, 'Nama bahan baku');
+            cekPanjang($satuan, 20, 'Satuan');
+            cekMaks($stok, 'Stok');
+            cekMaks($minimum, 'Stok minimum');
             if ($minimum < 0)   throw new Exception('Stok minimum tidak boleh negatif.');
 
             // BR (Modul 8): stok_tersedia TIDAK diubah dari form master data.
@@ -59,7 +67,7 @@ try {
             throw new Exception('Aksi tidak valid.');
     }
 } catch (Exception $e) {
-    setFlash('error', $e->getMessage());
+    setFlash('error', userError($e));
 }
 
 header("Location: bahan_baku.php");

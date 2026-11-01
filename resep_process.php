@@ -20,6 +20,7 @@ try {
             if ($idMenu <= 0)  throw new Exception('Menu wajib dipilih.');
             if ($idBahan <= 0) throw new Exception('Bahan baku wajib dipilih.');
             if ($takaran <= 0) throw new Exception('Takaran harus lebih besar dari 0.');
+            cekMaks($takaran, 'Takaran');
             
             // Cek duplikat kombinasi menu + bahan
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM resep WHERE id_menu = ? AND id_bahan_baku = ?");
@@ -38,6 +39,7 @@ try {
             if ($idMenu <= 0)  throw new Exception('Menu wajib dipilih.');
             if ($idBahan <= 0) throw new Exception('Bahan baku wajib dipilih.');
             if ($takaran <= 0) throw new Exception('Takaran harus lebih besar dari 0.');
+            cekMaks($takaran, 'Takaran');
             
             // Cek duplikat (kecuali dirinya sendiri)
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM resep WHERE id_menu = ? AND id_bahan_baku = ? AND id_resep != ?");
@@ -62,7 +64,7 @@ try {
             throw new Exception('Aksi tidak valid.');
     }
 } catch (Exception $e) {
-    setFlash('error', $e->getMessage());
+    setFlash('error', userError($e));
 }
 
 header("Location: resep.php");

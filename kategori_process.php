@@ -16,9 +16,10 @@ try {
     switch ($action) {
         case 'create':
             // Validasi
-            if (empty($nama)) {
+            if ($nama === '') {
                 throw new Exception('Nama kategori wajib diisi.');
             }
+            cekPanjang($nama, 50, 'Nama kategori');
             // Cek duplikat
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM kategori WHERE nama_kategori = ?");
             $stmt->execute([$nama]);
@@ -32,7 +33,8 @@ try {
 
         case 'update':
             if ($id <= 0) throw new Exception('ID kategori tidak valid.');
-            if (empty($nama)) throw new Exception('Nama kategori wajib diisi.');
+            if ($nama === '') throw new Exception('Nama kategori wajib diisi.');
+            cekPanjang($nama, 50, 'Nama kategori');
             // Cek duplikat (kecuali dirinya sendiri)
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM kategori WHERE nama_kategori = ? AND id_kategori != ?");
             $stmt->execute([$nama, $id]);
@@ -61,7 +63,7 @@ try {
             throw new Exception('Aksi tidak valid.');
     }
 } catch (Exception $e) {
-    setFlash('error', $e->getMessage());
+    setFlash('error', userError($e));
 }
 
 header("Location: kategori.php");

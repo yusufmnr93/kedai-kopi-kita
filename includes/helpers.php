@@ -61,3 +61,50 @@ function csvSafe($v): string {
 function tglIndo(string $ymd): string {
     return date('d/m/Y', strtotime($ymd));
 }
+
+/* ===== Modul 9: validasi batas, pesan galat aman, dan proteksi CSRF ===== */
+
+// Batas nilai kolom DECIMAL(10,2) pada database
+const MAX_DESIMAL = 99999999.99;
+
+/** Pesan galat yang aman ditampilkan: detail SQL tidak dibocorkan ke pengguna (BUG-01). */
+function userError(Throwable $e): string {
+    if ($e instanceof PDOException) {
+        error_log('[DB] ' . $e->getMessage());
+        return 'Data tidak dapat disimpan. Periksa kembali isian Anda (panjang teks atau besar angka mungkin melebihi batas).';
+    }
+    return $e->getMessage();
+}
+
+/** Lempar Exception jika teks melebihi panjang maksimum kolom. */
+function cekPanjang(string $v, int $max, string $label): void {
+    if (mb_strlen($v) > $max) throw new Exception($label . ' maksimal ' . $max . ' karakter.');
+}
+
+/** Lempar Exception jika angka melebihi batas kolom DECIMAL. */
+function cekMaks(float $v, string $label, float $max = MAX_DESIMAL): void {
+    if ($v > $max) throw new Exception($label . ' terlalu besar (maksimal ' . number_format(floor($max), 0, ',', '.') . ').');
+}
+
+/** Token CSRF per sesi (BUG-03). */
+function csrfToken(): string {
+    if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    return $_SESSION['csrf_token'];
+}
+function csrfField(): string {
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
+}
+/** Tolak setiap permintaan POST yang tidak membawa token sesi yang sah. */
+function csrfEnforce(): void {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') return;
+    $t = $_POST['csrf_token'] ?? '';
+    if (!is_string($t) || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $t)) {
+        http_response_code(403);
+        echo '<!DOCTYPE html><meta charset="utf-8"><title>Permintaan ditolak</title>'
+           . '<body style="font-family:sans-serif;max-width:480px;margin:15vh auto;text-align:center">'
+           . '<h2>Permintaan ditolak</h2><p>Token keamanan formulir tidak valid atau sudah kedaluwarsa. '
+           . 'Muat ulang halaman, lalu coba lagi.</p><p><a href="dashboard.php">Kembali ke aplikasi</a></p></body>';
+        exit;
+    }
+}
+

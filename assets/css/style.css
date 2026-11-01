@@ -1396,3 +1396,27 @@ table tfoot td { background: #F3F4F6; border-top: 2px solid var(--color-border);
 .nowrap { white-space: nowrap; }
 table th.text-right, table td.text-right { white-space: nowrap; }
 .dash-grid table th, .dash-grid table td { padding-left: 10px; padding-right: 10px; }
+
+
+/* ===== Modul 9: tombol menu untuk layar sempit (BUG-08) ===== */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  margin-right: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-card);
+  color: var(--color-text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.topbar-title { flex: 1; min-width: 0; }
+.sidebar-backdrop { display: none; }
+@media (max-width: 768px) {
+  .menu-toggle { display: inline-flex; }
+  .sidebar { z-index: 200; }
+  .sidebar-backdrop.show { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; }
+}
+@media print { .menu-toggle, .sidebar-backdrop { display: none !important; } }

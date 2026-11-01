@@ -37,11 +37,16 @@ try {
     $itemsValidated = [];
 
     foreach ($cartData as $item) {
+        if (!is_array($item)) throw new Exception('Data keranjang tidak valid.');
         $menuId = intval($item['id'] ?? 0);
-        $qty    = intval($item['qty'] ?? 0);
+        $rawQty = $item['qty'] ?? 0;
+        // BUG-05: jumlah porsi harus bilangan bulat (tidak dibulatkan diam-diam)
+        if (!is_numeric($rawQty) || floor((float)$rawQty) != (float)$rawQty) throw new Exception('Jumlah porsi harus berupa bilangan bulat.');
+        $qty    = (int)$rawQty;
 
         if ($menuId <= 0) throw new Exception('ID menu tidak valid.');
         if ($qty <= 0) throw new Exception('Jumlah porsi harus lebih besar dari 0.');
+        if ($qty > 999) throw new Exception('Jumlah porsi per item maksimal 999.');
 
         // Ambil data menu dari DB
         $stmt = $pdo->prepare("SELECT * FROM menu WHERE id_menu = ?");
@@ -67,6 +72,7 @@ try {
         if ($nominal <= 0) {
             throw new Exception('Nominal bayar harus lebih besar dari 0.');
         }
+        cekMaks($nominal, 'Nominal bayar');
         if ($nominal < $totalHarga) {
             throw new Exception('Nominal bayar (Rp ' . number_format($nominal, 0, ',', '.') . ') kurang dari total (Rp ' . number_format($totalHarga, 0, ',', '.') . ').');
         }
@@ -90,6 +96,11 @@ try {
         ");
         $stmt->execute([$item['id_menu']]);
         $resepList = $stmt->fetchAll();
+
+        // BR-01 (Modul 3): menu tanpa resep aktif tidak boleh dijual
+        if (!$resepList) {
+            throw new Exception('Menu "' . $item['nama'] . '" belum memiliki konfigurasi resep.');
+        }
 
         foreach ($resepList as $resep) {
             $idBahan = $resep['id_bahan_baku'];
@@ -161,13 +172,13 @@ try {
         header("Location: receipt.php?id=" . $idTransaksi);
         exit;
 
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         $pdo->rollBack();
         throw $e;
     }
 
-} catch (Exception $e) {
-    setFlash('error', $e->getMessage());
+} catch (Throwable $e) {
+    setFlash('error', userError($e));
     header("Location: pos.php");
     exit;
 }

@@ -29,7 +29,7 @@ if ($dari === '' && $sampai === '') {
 } elseif ($dari > $sampai) {
     $errors[] = 'Tanggal awal tidak boleh melebihi tanggal akhir.';
     $reset = true;
-} elseif ((strtotime($sampai) - strtotime($dari)) / 86400 > 366) {
+} elseif ((int)round((strtotime($sampai) - strtotime($dari)) / 86400) + 1 > 366) { // hitungan inklusif (BUG-06)
     $errors[] = 'Rentang laporan maksimal 366 hari.';
     $reset = true;
 }

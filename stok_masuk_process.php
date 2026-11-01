@@ -17,8 +17,23 @@ $userId    = getCurrentUser()['id'];
 
 try {
     if ($idBahan <= 0) throw new Exception('Bahan baku wajib dipilih.');
+    $cek = $pdo->prepare("SELECT COUNT(*) FROM bahan_baku WHERE id_bahan_baku = ?");
+    $cek->execute([$idBahan]);
+    if ($cek->fetchColumn() == 0) throw new Exception('Bahan baku yang dipilih tidak ditemukan.');
     if ($jumlah <= 0)  throw new Exception('Jumlah masuk harus lebih besar dari 0.');
-    if (empty($tanggal)) throw new Exception('Tanggal masuk wajib diisi.');
+    cekMaks($jumlah, 'Jumlah masuk');
+    if ($tanggal === '') throw new Exception('Tanggal masuk wajib diisi.');
+    cekPanjang($keterangan, 255, 'Keterangan');
+
+    // BUG-02: tanggal harus berformat valid dan tidak boleh di masa depan
+    $dt = null;
+    foreach (['Y-m-d\TH:i', 'Y-m-d\TH:i:s', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'] as $fmt) {
+        $d = DateTime::createFromFormat('!' . $fmt, $tanggal);
+        if ($d && $d->format($fmt) === $tanggal) { $dt = $d; break; }
+    }
+    if (!$dt) throw new Exception('Format tanggal masuk tidak valid.');
+    if ($dt > new DateTime('+1 minute')) throw new Exception('Tanggal masuk tidak boleh melebihi waktu sekarang.');
+    $tanggal = $dt->format('Y-m-d H:i:s');
 
     // Gunakan transaction untuk konsistensi
     $pdo->beginTransaction();
@@ -36,7 +51,7 @@ try {
 
 } catch (Exception $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    setFlash('error', $e->getMessage());
+    setFlash('error', userError($e));
 }
 
 header("Location: stok_masuk.php");

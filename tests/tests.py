@@ -333,5 +333,50 @@ def t():
     return ("Layar 390 px: tombol menu terlihat, sidebar terbuka, tautan POS Kasir dapat dipilih" if ok else f"Layar 390 px: tombol menu terlihat={ada}; sidebar dapat dibuka={terbuka}; navigasi berhasil={pindah} (menu tidak dapat dijangkau)", ok)
 case("TC-58","TS-09","NFR (usability)","Positif","Navigasi pada layar sempit (ponsel 390 px)","viewport 390 × 800, login Kasir","Buka aplikasi di layar sempit → cari tombol menu → buka menu → pilih POS Kasir","Menu dapat dibuka dan dipakai untuk berpindah halaman",t)
 
+
+# ============ TS-10 Kesiapan demo: offline dan ketersediaan database (Modul 10) ============
+reset(); own, kas, bar = U("owner"), U("kasir"), U("barista")
+def t():
+    hal = [(own, "dashboard.php"), (own, "pos.php"), (own, "laporan.php"), (own, "menu.php"), (own, "transaksi.php")]
+    ext = []
+    for u, p in hal:
+        for m in re.finditer(r'(?:src|href)="(https?://[^"]+)"', u.get(p).text): ext.append(f"{p}: {m.group(1)}")
+    login = U().s.get(B + "/login.php").text
+    for m in re.finditer(r'(?:src|href)="(https?://[^"]+)"', login): ext.append(f"login.php: {m.group(1)}")
+    ok = not ext
+    return ("Tidak ada sumber eksternal pada login, Dashboard, POS, Laporan, Menu, dan Riwayat" if ok else "Sumber eksternal ditemukan: " + "; ".join(sorted(set(ext))[:3]), ok)
+case("TC-59","TS-10","LKM 10.3 (tidak bergantung internet)","Positif","Halaman tidak memuat sumber dari internet","6 halaman utama","Periksa seluruh atribut src/href pada HTML","Semua aset (CSS, font, ikon, JS) berasal dari server lokal",t)
+def t():
+    from playwright.sync_api import sync_playwright
+    keluar = []
+    with sync_playwright() as p:
+        br = p.chromium.launch(); pg = br.new_context(viewport={"width": 1366, "height": 820}).new_page()
+        def rt(r):
+            if r.request.url.startswith(B): r.continue_()
+            else: keluar.append(r.request.url); r.abort()
+        pg.route("**/*", rt)
+        pg.goto(B + "/login.php"); pg.fill("#username", "kasir"); pg.fill("#password", "kasir123"); pg.click("button[type=submit]"); pg.wait_for_load_state()
+        pg.goto(B + "/pos.php"); pg.wait_for_timeout(600)
+        ikon = pg.locator("svg.lucide").count(); font = pg.evaluate("document.fonts.check('600 16px Inter')")
+        br.close()
+    ok = ikon > 0 and font and not keluar
+    return (f"Internet diblokir: {ikon} ikon tampil, font Inter termuat={font}, permintaan keluar={len(keluar)}" , ok)
+case("TC-60","TS-10","LKM 10.3 (tidak bergantung internet)","Positif","Tampilan lengkap saat internet diblokir","semua permintaan di luar server aplikasi ditolak","Buka login → POS dengan jaringan luar diblokir","Ikon dan font tetap tampil; tidak ada permintaan keluar",t)
+def t():
+    import subprocess as sp, os, time
+    appdir = os.environ.get("APP_DIR", BASE); env = dict(os.environ, KKK_DB_HOST="127.0.0.1", KKK_DB_PORT="3399")
+    srv = sp.Popen(["php", "-S", "127.0.0.1:8082"], cwd=appdir, env=env, stdout=sp.DEVNULL, stderr=sp.DEVNULL); time.sleep(1.5)
+    try:
+        ss = requests.Session(); g = ss.get("http://127.0.0.1:8082/login.php", timeout=10)
+        m = re.search(r'name="csrf_token" value="([^"]+)"', g.text); dd = {"username": "owner", "password": "owner123"}
+        if m: dd["csrf_token"] = m.group(1)
+        r = ss.post("http://127.0.0.1:8082/login.php", data=dd, timeout=10); tt = text(r.text)
+        bocor = re.search(r"SQLSTATE|Access denied|Connection refused|127\.0\.0\.1|3399|root@|Stack trace|Warning:", tt)
+        ok = r.status_code == 503 and "tidak dapat" in tt.lower() and not bocor
+        return (f"HTTP {r.status_code}; tampil: \"{tt[:95]}…\"" + (f"; detail teknis bocor: {bocor.group(0)}" if bocor else ""), ok)
+    finally:
+        srv.terminate(); srv.wait()
+case("TC-61","TS-10","LKM 10.3; pertanyaan dosen no. 9","Negatif","Database tidak tersedia","koneksi diarahkan ke port yang tidak aktif (3399)","Jalankan aplikasi tanpa database → coba login","Halaman galat yang ramah (HTTP 503) tanpa detail teknis",t)
+
 save(OUT)
 p=sum(1 for r in RES if r["status"]=="PASS"); print(f"\nTOTAL {len(RES)}  PASS {p}  FAIL {len(RES)-p}")

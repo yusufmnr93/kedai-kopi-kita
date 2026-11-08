@@ -43,13 +43,8 @@ $navMenus = [
   <meta name="csrf-token" content="<?= htmlspecialchars(csrfToken()) ?>">
   <title><?= $pageTitle ?? 'Kedai Kopi Kita' ?> — Kedai Kopi Kita</title>
   
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Lucide Icons (CDN) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide Icons (lokal — aplikasi tidak bergantung pada internet) -->
+  <script src="assets/vendor/lucide.min.js"></script>
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="assets/css/style.css">
